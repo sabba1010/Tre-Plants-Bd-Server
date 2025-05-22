@@ -1,3 +1,91 @@
+// const express = require('express');
+// const cors = require('cors');
+// require('dotenv').config();
+// const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+
+// const app = express();
+// const port = process.env.PORT || 3000;
+
+// app.use(cors());
+// app.use(express.json());
+
+
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.djvkmk5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+// // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+// const client = new MongoClient(uri, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   }
+// });
+// async function run() {
+//   try {
+//     // Connect the client to the server	(optional starting in v4.7)
+//     await client.connect();
+
+// const plantsCollection = client.db('plantsDB').collection('plants')
+// const userCollection = 
+
+// app.get('/plants',  async(req, res)  =>{
+//     // const cursor = plantsCollection.find();
+//     // const result = await cursor.toArray();
+//     const result = await plantsCollection.find().toArray();
+//     res.send(result);
+// })
+
+// app.get('/plants/:id', async (req, res) =>{
+//     const id = req.params.id;
+//     const query = {_id: new ObjectId(id) }
+//     const result = await plantsCollection.findOne(query);
+//     res.send(result);
+// })
+
+//   app.post('/plants', async(req, res) =>{
+//   const newPlants = req.body;
+//   console.log(newPlants);
+//   const result = await plantsCollection.insertOne(newPlants);
+//   res.send(result);
+//   })
+
+
+//   app.delete('/plants/:id', async(req, res) =>{
+//       const id = req.params.id;
+//       const query = {_id: new ObjectId(id)}
+//       const result = await plantsCollection.deleteOne(query);
+//       res.send(result);
+//     })
+
+
+//   //  user related apis
+
+
+
+    
+//     // Send a ping to confirm a successful connection
+//     await client.db("admin").command({ ping: 1 });
+//     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+//   } finally {
+//     // Ensures that the client will close when you finish/error
+//     // await client.close();
+//   }
+// }
+// run().catch(console.dir);
+
+
+
+// app.get('/',(req, res) =>{
+//     res.send('Tree Plant Server Getting Ready.')
+// });
+
+
+// app.listen(port, () =>{
+//     console.log(`Tree Plant Server Runing ${port}`);
+    
+// });
+
+
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -9,7 +97,6 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.djvkmk5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -20,62 +107,68 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-const plantsCollection = client.db('plantsDB').collection('plants')
+    const plantsCollection = client.db('plantsDB').collection('plants');
+    const usersCollection = client.db('plantsDB').collection('users'); // assuming users collection for plantsDB
 
-app.get('/plants',  async(req, res)  =>{
-    // const cursor = plantsCollection.find();
-    // const result = await cursor.toArray();
-    const result = await plantsCollection.find().toArray();
-    res.send(result);
-})
+    // Plants APIs
+    app.get('/plants', async (req, res) => {
+      const result = await plantsCollection.find().toArray();
+      res.send(result);
+    });
 
-app.get('/plants/:id', async (req, res) =>{
-    const id = req.params.id;
-    const query = {_id: new ObjectId(id) }
-    const result = await plantsCollection.findOne(query);
-    res.send(result);
-})
-
-  app.post('/plants', async(req, res) =>{
-  const newPlants = req.body;
-  console.log(newPlants);
-  const result = await plantsCollection.insertOne(newPlants);
-  res.send(result);
-  })
-
-
-  app.delete('/plants/:id', async(req, res) =>{
+    app.get('/plants/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) };
+      const result = await plantsCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.post('/plants', async (req, res) => {
+      const newPlant = req.body;
+      console.log(newPlant);
+      const result = await plantsCollection.insertOne(newPlant);
+      res.send(result);
+    });
+
+    app.delete('/plants/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
       const result = await plantsCollection.deleteOne(query);
       res.send(result);
-    })
-    
-    // Send a ping to confirm a successful connection
+    });
+
+    // User related APIs (example)
+    app.get('/users', async (req, res) => {
+      const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post('/users', async (req, res) => {
+      const newUser = req.body;
+      console.log(newUser);
+      const result = await usersCollection.insertOne(newUser);
+      res.send(result);
+    });
+
+    // Ping to confirm connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
+    // You can close the client here if you want, but typically keep it open
   }
 }
+
 run().catch(console.dir);
 
-
-
-app.get('/',(req, res) =>{
-    res.send('Tree Plant Server Getting Ready.')
+app.get('/', (req, res) => {
+  res.send('Tree Plant Server Getting Ready.');
 });
 
-
-app.listen(port, () =>{
-    console.log(`Tree Plant Server Runing ${port}`);
-    
+app.listen(port, () => {
+  console.log(`Tree Plant Server running on port ${port}`);
 });
-
-
