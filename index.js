@@ -52,6 +52,14 @@ app.put('/plants/:id',  async(req, res) =>{
   const id  = req.params.id;
   const filter = { _id: new ObjectId(id)}
   const options = {upsert: true};
+  const updatedPlants = req.body;
+  const updatedDoc = {
+    $set:updatedPlants
+  }
+
+   const result = await plantsCollection.updateOne(filter, updatedDoc, options);
+
+   res.send(result);
 })
 
 
