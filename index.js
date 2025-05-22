@@ -100,8 +100,3 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Tree Plant Server running on port ${port}`);
 });
-
-
-
-
-
